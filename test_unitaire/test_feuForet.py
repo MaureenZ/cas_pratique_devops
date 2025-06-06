@@ -28,6 +28,41 @@ class TestFireSimulation(unittest.TestCase):
         self.sim.map = copy.deepcopy(self.map_enum)
         self.sim.current_map = copy.deepcopy(self.map_enum)
 
+    def test_get_neighbors_center(self):
+        # Point au centre (1,1) dans une grille 4x4
+        neighbors = self.sim.get_neighbors(1, 1)
+        expected = [
+            (0, 0), (1, 0), (2, 0),
+            (0, 1),         (2, 1),
+            (0, 2), (1, 2), (2, 2),
+        ]
+        self.assertCountEqual(neighbors, expected)
+
+    def test_get_neighbors_corner(self):
+        # Point en coin (0,0) dans une grille 4x4
+        neighbors = self.sim.get_neighbors(0, 0)
+        expected = [
+            (1, 0), (0, 1), (1, 1)
+        ]
+        self.assertCountEqual(neighbors, expected)
+
+    def test_get_neighbors_edge(self):
+        # Point sur bord (0,1) dans une grille 4x4
+        neighbors = self.sim.get_neighbors(0, 1)
+        expected = [
+            (0, 0), (1, 0),
+            (1, 1),
+            (0, 2), (1, 2),
+        ]
+        self.assertCountEqual(neighbors, expected)
+
+    def test_get_neighbors_bottom_right_corner(self):
+        # Point en coin bas droit (3,3)
+        neighbors = self.sim.get_neighbors(3, 3)
+        expected = [
+            (2, 2), (3, 2), (2, 3)
+        ]
+        self.assertCountEqual(neighbors, expected)
 
     def test_reset_map_resets_current_map(self):
         # Modifier current_map pour simuler un état modifié (ex: tout brûlé)
