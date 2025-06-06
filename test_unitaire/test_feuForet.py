@@ -27,6 +27,34 @@ class TestFireSimulation(unittest.TestCase):
         self.sim.map = copy.deepcopy(self.map_enum)
         self.sim.current_map = copy.deepcopy(self.map_enum)
 
+    def test_simulate_fire_valid_and_propagation(self):
+        # Test normal : départ feu sur arbre en (1,1)
+        burnt = self.sim.simulate_fire(1, 1)
+        # On s'attend à ce que tous les arbres connectés brûlent
+        # Arbres dans la map à (0,1), (1,0), (1,1), (3,1) est vide, (1,3) arbre isolé
+        # Donc brûleront (0,1), (1,0), (1,1) soit 3 cases
+        self.assertEqual(burnt, 3)
+        # Vérifier que ces cases sont bien marquées brûlées
+        self.assertEqual(self.sim.current_map[1][0], TerrainType.BURNT)
+        self.assertEqual(self.sim.current_map[0][1], TerrainType.BURNT)
+        self.assertEqual(self.sim.current_map[1][1], TerrainType.BURNT)
+        # Arbre isolé en (1,3) non brûlé
+        self.assertEqual(self.sim.current_map[3][1], TerrainType.TREE)
+
+    def test_simulate_fire_invalid_position(self):
+        with self.assertRaises(ValueError):
+            self.sim.simulate_fire(-1, 0)
+        with self.assertRaises(ValueError):
+            self.sim.simulate_fire(4, 0)
+        with self.assertRaises(ValueError):
+            self.sim.simulate_fire(0, 4)
+
+    def test_simulate_fire_no_tree_at_start(self):
+        # Case vide en (0,0) => pas d'arbre à brûler
+        result = self.sim.simulate_fire(0, 0)
+        self.assertEqual(result, 0)
+
+
     def test_apply_smart_preventive_cut_improves_fire(self):
         result = self.sim.apply_smart_preventive_cut(0, 1)  # feu départ sur un arbre en (0,1)
         self.assertIsNotNone(result)
