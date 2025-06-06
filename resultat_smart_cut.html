@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carte Initiale - Avant Incendie</title>
+    <title>Simulation d'Incendie de Forêt</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,63 +65,63 @@
 </head>
 <body>
     <div class="container">
-        <h1>Carte Initiale - Avant Incendie</h1>
+        <h1>Simulation d'Incendie de Forêt</h1>
         
         <div class="map-container">
             <div class="map">
-                <div class="cell" title="(0,0) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,0) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(1,0) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(2,0) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(3,0) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(3,0) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(4,0) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(5,0) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(6,0) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(7,0) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(8,0) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(9,0) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(0,1) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,1) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(1,1) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(2,1) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(3,1) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(4,1) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(3,1) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(4,1) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(5,1) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(6,1) - Eau"><span>💧</span></div>
                 <div class="cell" title="(7,1) - Eau"><span>💧</span></div>
                 <div class="cell" title="(8,1) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(9,1) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(0,2) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,2) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(1,2) - Eau"><span>💧</span></div>
-                <div class="cell" title="(2,2) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(3,2) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(4,2) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(5,2) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(2,2) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(3,2) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(4,2) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(5,2) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(6,2) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(7,2) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(8,2) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(9,2) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(0,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(1,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(2,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(3,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(4,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(5,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(6,3) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(1,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(2,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(3,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(4,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(5,3) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(6,3) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(7,3) - Eau"><span>💧</span></div>
                 <div class="cell" title="(8,3) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(9,3) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(0,4) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,4) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(1,4) - Eau"><span>💧</span></div>
                 <div class="cell" title="(2,4) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(3,4) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(4,4) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(5,4) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(3,4) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(4,4) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(5,4) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(6,4) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(7,4) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(8,4) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(9,4) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(0,5) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(1,5) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(2,5) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,5) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(1,5) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(2,5) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(3,5) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(4,5) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(5,5) - Eau"><span>💧</span></div>
@@ -130,20 +130,20 @@
                 <div class="cell" title="(8,5) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(9,5) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(0,6) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(1,6) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(2,6) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(3,6) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(4,6) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(1,6) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(2,6) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(3,6) - Terrain brûlé"><span>🔥</span></div>
+                <div class="cell" title="(4,6) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(5,6) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(6,6) - Eau"><span>💧</span></div>
                 <div class="cell" title="(7,6) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(8,6) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(9,6) - Arbre"><span>🌳</span></div>
-                <div class="cell" title="(0,7) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(0,7) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(1,7) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(2,7) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(3,7) - Terrain nu"><span>🍂</span></div>
-                <div class="cell" title="(4,7) - Arbre"><span>🌳</span></div>
+                <div class="cell" title="(4,7) - Terrain brûlé"><span>🔥</span></div>
                 <div class="cell" title="(5,7) - Terrain nu"><span>🍂</span></div>
                 <div class="cell" title="(6,7) - Arbre"><span>🌳</span></div>
                 <div class="cell" title="(7,7) - Terrain nu"><span>🍂</span></div>
@@ -155,9 +155,10 @@
         <div class="stats">
             <h3>Statistiques de la simulation</h3>
             <div class="stat-item"><strong>Taille de la carte:</strong> 10 × 8 (80 cases)</div>
-            <div class="stat-item"><strong>Terrain nu:</strong> 25 cases (31.2%)</div>
-            <div class="stat-item"><strong>Arbre:</strong> 47 cases (58.8%)</div>
+            <div class="stat-item"><strong>Terrain nu:</strong> 26 cases (32.5%)</div>
+            <div class="stat-item"><strong>Arbre:</strong> 17 cases (21.2%)</div>
             <div class="stat-item"><strong>Eau:</strong> 8 cases (10.0%)</div>
+            <div class="stat-item"><strong>Terrain brûlé:</strong> 29 cases (36.2%)</div>
         </div>
     </div>
 </body>

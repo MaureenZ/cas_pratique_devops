@@ -3,37 +3,27 @@ import copy
 from enum import Enum
 
 class TerrainType(Enum):
-    """Types de terrain possibles"""
+    """Type de terrain"""
     EMPTY = 0      # Terrain nu
     TREE = 1       # Arbre
     WATER = 2      # Plan d'eau
     BURNT = 3      # Terrain brûlé
 
-class ForestFireSimulator:
-    """Simulateur de feux de forêt"""
-    
+class ForestFireSimulator:    
     def __init__(self, width: int = 10, height: int = 8):
         """
-        Initialise le simulateur
-        
-        Args:
-            width: Largeur de la carte
-            height: Hauteur de la carte
+        Initialisation 
         """
         self.width = width
         self.height = height
-        self.original_map = []
+        self.map = []
         self.current_map = []
         
-    def generate_random_map(self, tree_percentage: float = 0.6, water_percentage: float = 0.1):
+    def map_generator(self, tree_percentage: float = 0.6, water_percentage: float = 0.1):
         """
-        Génère une carte aléatoire
-        
-        Args:
-            tree_percentage: Pourcentage d'arbres (0.0 à 1.0)
-            water_percentage: Pourcentage d'eau (0.0 à 1.0)
+        Génère une carte
         """
-        self.original_map = []
+        self.map = []
         
         for y in range(self.height):
             row = []
@@ -46,24 +36,14 @@ class ForestFireSimulator:
                 else:
                     terrain = TerrainType.EMPTY
                 row.append(terrain)
-            self.original_map.append(row)
+            self.map.append(row)
         
-        # Copie pour les simulations
-        self.current_map = copy.deepcopy(self.original_map)
+        self.current_map = copy.deepcopy(self.map)
     
-    def reset_map(self):
-        """Remet la carte dans son état initial"""
-        self.current_map = copy.deepcopy(self.original_map)
         
     def get_neighbors(self, x: int, y: int):
         """
-        Retourne les coordonnées des voisins (incluant diagonales)
-        
-        Args:
-            x, y: Coordonnées de la case
-            
-        Returns:
-            Liste des coordonnées des voisins valides
+        Retourne les coordonnées des terrains voisins
         """
         neighbors = []
         for dx in [-1, 0, 1]:
@@ -75,15 +55,14 @@ class ForestFireSimulator:
                     neighbors.append((nx, ny))
         return neighbors
     
+    def reset_map(self):
+        """Remet la carte dans son état initial"""
+        self.current_map = copy.deepcopy(self.map)
+    
     def simulate_fire(self, start_x: int, start_y: int):
         """
         Simule un incendie à partir d'une position donnée
-        
-        Args:
-            start_x, start_y: Position de départ du feu
-            
-        Returns:
-            Nombre de cases brûlées
+        Retourne le nombre de case brulé
         """
         if not (0 <= start_x < self.width and 0 <= start_y < self.height):
             raise ValueError("Position de départ invalide")
@@ -92,7 +71,7 @@ class ForestFireSimulator:
             print(f"Pas d'arbre à brûler à la position ({start_x}, {start_y})")
             return 0
         
-        # File d'attente pour la propagation du feu (BFS)
+        # liste pour progation du feu
         fire_queue = [(start_x, start_y)]
         burnt_count = 0
         
@@ -101,46 +80,39 @@ class ForestFireSimulator:
         while fire_queue:
             x, y = fire_queue.pop(0)
             
-            # Si cette case n'est pas un arbre, on passe
+            # si pas arbre on passe 
             if self.current_map[y][x] != TerrainType.TREE:
                 continue
             
-            # Brûler la case
+            # brule la case (terrain arbre)
             self.current_map[y][x] = TerrainType.BURNT
             burnt_count += 1
             print(f"Case brûlée: ({x}, {y}) - Total: {burnt_count}")
             
-            # Propager aux voisins
+            # propagation aux voisins
             for nx, ny in self.get_neighbors(x, y):
                 if self.current_map[ny][nx] == TerrainType.TREE:
-                    # Vérifier que ce voisin n'est pas déjà dans la queue
+                    # vérifie que voisin est pas déjà dans la liste
                     if (nx, ny) not in fire_queue:
                         fire_queue.append((nx, ny))
         
         print(f"Incendie terminé - Total de cases brûlées: {burnt_count}")
         return burnt_count
     
-    def export_html(self, filename: str = "forest_fire_simulation.html", title: str = "Simulation d'Incendie de Forêt", use_original_map: bool = False):
+    def export_html(self, filename: str = "forest_fire_simulation.html", title: str = "Simulation d'Incendie de Forêt", use_map: bool = False):
         """
-        Exporte la simulation en HTML pour visualisation
-        
-        Args:
-            filename: Nom du fichier HTML à créer
-            title: Titre de la page
-            use_original_map: Si True, utilise la carte originale, sinon la carte actuelle
+        Export HTML
         """
-        # Choisir quelle carte utiliser
-        map_to_export = self.original_map if use_original_map else self.current_map
+
+        map_to_export = self.map if use_map else self.current_map
         
-        # Couleurs pour chaque type de terrain
         colors = {
-            TerrainType.EMPTY: '#D2B48C',    # Beige pour terrain nu
-            TerrainType.TREE: '#228B22',     # Vert pour les arbres
-            TerrainType.WATER: '#4169E1',    # Bleu pour l'eau
-            TerrainType.BURNT: '#8B0000'     # Rouge foncé pour terrain brûlé
+            TerrainType.EMPTY: '#D2B48C',    # terrain nu
+            TerrainType.TREE: '#228B22',     # arbres
+            TerrainType.WATER: '#4169E1',    # l'eau
+            TerrainType.BURNT: '#8B0000'     # terrain brûlé
         }
         
-        # Symboles pour la légende
         symbols = {
             TerrainType.EMPTY: 'Terrain nu',
             TerrainType.TREE: 'Arbre',
@@ -148,7 +120,6 @@ class ForestFireSimulator:
             TerrainType.BURNT: 'Terrain brûlé'
         }
         
-        # Calculer les statistiques
         total_cells = self.width * self.height
         stats = {}
         for terrain_type in TerrainType:
@@ -158,7 +129,6 @@ class ForestFireSimulator:
                 'percentage': (count / total_cells) * 100
             }
         
-        # Générer le HTML
         html_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -206,23 +176,6 @@ class ForestFireSimulator:
             font-weight: bold;
             font-size: 12px;
         }}
-        .legend {{
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }}
-        .legend-item {{
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }}
-        .legend-color {{
-            width: 20px;
-            height: 20px;
-            border: 1px solid #333;
-        }}
         .stats {{
             background-color: #f8f9fa;
             padding: 15px;
@@ -239,12 +192,6 @@ class ForestFireSimulator:
             background-color: white;
             border-radius: 3px;
         }}
-        .coordinates {{
-            font-size: 10px;
-            color: #666;
-            text-align: center;
-            margin: 10px 0;
-        }}
     </style>
 </head>
 <body>
@@ -254,43 +201,28 @@ class ForestFireSimulator:
         <div class="map-container">
             <div class="map">"""
         
-        # Générer les cellules de la carte
+        icons = {
+            TerrainType.EMPTY: '🍂',
+            TerrainType.TREE: '🌳',
+            TerrainType.WATER: '💧',
+            TerrainType.BURNT: '🔥',
+        }
+
         for y in range(self.height):
             for x in range(self.width):
                 terrain = map_to_export[y][x]
-                color = colors[terrain]
+                icon = icons[terrain]
                 html_content += f"""
-                <div class="cell" style="background-color: {color};" title="({x},{y}) - {symbols[terrain]}"></div>"""
+                <div class="cell" title="({x},{y}) - {symbols[terrain]}"><span>{icon}</span></div>"""
         
         html_content += f"""
             </div>
-        </div>
-        
-        <div class="coordinates">
-            Coordonnées : survolez les cases pour voir la position et le type de terrain
-        </div>
-        
-        <div class="legend">"""
-        
-        # Générer la légende
-        for terrain_type in TerrainType:
-            if stats[terrain_type]['count'] > 0:  # Afficher seulement les types présents
-                color = colors[terrain_type]
-                name = symbols[terrain_type]
-                html_content += f"""
-            <div class="legend-item">
-                <div class="legend-color" style="background-color: {color};"></div>
-                <span>{name}</span>
-            </div>"""
-        
-        html_content += f"""
         </div>
         
         <div class="stats">
             <h3>Statistiques de la simulation</h3>
             <div class="stat-item"><strong>Taille de la carte:</strong> {self.width} × {self.height} ({total_cells} cases)</div>"""
         
-        # Ajouter les statistiques détaillées
         for terrain_type in TerrainType:
             if stats[terrain_type]['count'] > 0:
                 name = symbols[terrain_type]
@@ -301,15 +233,10 @@ class ForestFireSimulator:
         
         html_content += """
         </div>
-        
-        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px;">
-            Généré par le Simulateur de Feux de Forêt
-        </div>
     </div>
 </body>
 </html>"""
         
-        # Écrire le fichier
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
@@ -317,16 +244,22 @@ class ForestFireSimulator:
         return filename
     
     def display_map(self, show_burnt=True):
-        """Affiche la carte en console pour les tests"""
-        symbols = {
+        """Test"""
+        """symbols = {
             TerrainType.EMPTY: '.',
             TerrainType.TREE: 'T',
             TerrainType.WATER: 'W',
             TerrainType.BURNT: 'X'
+        }"""
+
+        symbols = {
+            TerrainType.EMPTY: '⬜',
+            TerrainType.TREE: '🌳',
+            TerrainType.WATER: '💧',
+            TerrainType.BURNT: '🔥',
         }
         
-        # Choisir quelle carte afficher
-        map_to_show = self.current_map if show_burnt else self.original_map
+        map_to_show = self.current_map if show_burnt else self.map
         
         print("=" * (self.width + 2))
         for row in map_to_show:
@@ -337,80 +270,141 @@ class ForestFireSimulator:
             print(line)
         print("=" * (self.width + 2))
         
-        # Statistiques
         total_cells = self.width * self.height
         tree_count = sum(row.count(TerrainType.TREE) for row in map_to_show)
         water_count = sum(row.count(TerrainType.WATER) for row in map_to_show)
         empty_count = sum(row.count(TerrainType.EMPTY) for row in map_to_show)
         burnt_count = sum(row.count(TerrainType.BURNT) for row in map_to_show)
         
-        print(f"Statistiques:")
+        print(f"Statistique:")
         print(f"- Arbres: {tree_count}/{total_cells} ({tree_count/total_cells*100:.1f}%)")
         print(f"- Eau: {water_count}/{total_cells} ({water_count/total_cells*100:.1f}%)")
         print(f"- Terrain nu: {empty_count}/{total_cells} ({empty_count/total_cells*100:.1f}%)")
         if burnt_count > 0:
             print(f"- Terrain brûlé: {burnt_count}/{total_cells} ({burnt_count/total_cells*100:.1f}%)")
 
-# Test du simulateur
+    def apply_smart_n_preventive_cut(self, fire_x: int, fire_y: int, nCase: int):
+        """
+        Coupe intelligemment jusqu'à n arbres pour limiter la propagation du feu.
+
+        Args:
+            fire_x: Coordonnée x du départ du feu
+            fire_y: Coordonnée y du départ du feu
+            nCase: Nombre maximum d'arbres à couper
+
+        Returns:
+            Liste de tuples (x, y, feu_avant, feu_apres) pour chaque coupe effectuée
+        """
+        coupes_effectuees = []
+
+        for _ in range(nCase):
+            result = self.apply_smart_preventive_cut(fire_x, fire_y)
+            if result is None:
+                break  # Plus aucune amélioration possible
+            x, y, feu_avant, feu_apres = result
+            coupes_effectuees.append((x, y, feu_avant, feu_apres))
+
+        return coupes_effectuees
+        
+
+    def apply_smart_preventive_cut(self, fire_x: int, fire_y: int):
+        """
+        Applique une stratégie intelligente de coupe d'un seul arbre pour limiter la propagation du feu.
+        
+        Args:
+            fire_x: Coordonnée x de départ du feu
+            fire_y: Coordonnée y de départ du feu
+            
+        Returns:
+            Tuple (meilleur_x, meilleur_y, nb_brule_initial, nb_brule_apres) de la meilleure coupe
+        """
+        # Carte initiale sans modification
+        self.reset_map()
+        nb_brule_initial = self.simulate_fire(fire_x, fire_y)
+        
+        # Liste des positions d'arbres
+        tree_positions = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if self.map[y][x] == TerrainType.TREE
+        ]
+
+        best_cut = None
+        min_burnt = nb_brule_initial
+
+        for (x, y) in tree_positions:
+            # empecher de couper le départ du feu
+            if (x, y) == (fire_x, fire_y):
+                continue
+
+            # Créer une copie temporaire de la carte
+            temp_map = copy.deepcopy(self.map)
+            temp_map[y][x] = TerrainType.EMPTY  # Couper l'arbre
+
+            # Simuler le feu avec cette carte
+            self.current_map = copy.deepcopy(temp_map)
+            burnt = self.simulate_fire(fire_x, fire_y)
+
+            if burnt < min_burnt:
+                min_burnt = burnt
+                best_cut = (x, y)
+        
+        # Réappliquer la meilleure coupe sur la vraie carte
+        if best_cut:
+            self.map[best_cut[1]][best_cut[0]] = TerrainType.EMPTY
+            self.reset_map()
+            self.simulate_fire(fire_x, fire_y)
+            print(f"Meilleure coupe: {best_cut}, Feu initial: {nb_brule_initial}, Feu après coupe: {min_burnt}")
+            return best_cut + (nb_brule_initial, min_burnt)
+        else:
+            print("Aucune coupe n'améliore la situation.")
+            return None
+
+
+
+#lancement du simulateur
 if __name__ == "__main__":
     # Créer un simulateur
     simulator = ForestFireSimulator(10, 8)
     
     # Générer une carte avec 60% d'arbres et 10% d'eau
-    simulator.generate_random_map(tree_percentage=0.6, water_percentage=0.1)
+    simulator.map_generator(tree_percentage=0.6, water_percentage=0.1)
     
     # Afficher la carte initiale
     print("Carte initiale:")
     simulator.display_map(show_burnt=False)
     
-    # Export HTML de la carte initiale
-    print(f"\n" + "="*30)
-    print("EXPORT HTML - CARTE INITIALE")
-    print("="*30 + "\n")
-    
-    html_initial = simulator.export_html("carte_initiale.html", "Carte Initiale - Avant Incendie", use_original_map=True)
-    print(f"Carte initiale exportée : {html_initial}")
-    
-    print("\n" + "="*50)
-    print("SIMULATION D'INCENDIE")
-    print("="*50 + "\n")
+    html_initial = simulator.export_html("carte_initiale.html", "Carte Initiale - Avant Incendie", use_map=True)
     
     # Lancer un incendie au centre de la carte
     fire_x, fire_y = simulator.width // 2, simulator.height // 2
     burnt_cells = simulator.simulate_fire(fire_x, fire_y)
     
-    print(f"\n" + "="*50)
-    print("RÉSULTAT APRÈS INCENDIE")
-    print("="*50 + "\n")
-    
     # Afficher la carte après l'incendie
     print("Carte après incendie:")
     simulator.display_map(show_burnt=True)
     
-    # Export HTML
-    print(f"\n" + "="*30)
-    print("EXPORT HTML - APRÈS INCENDIE")
-    print("="*30 + "\n")
-    
     html_file = simulator.export_html("simulation_incendie.html", "Résultat de la Simulation d'Incendie")
-    print(f"Simulation exportée : {html_file}")
-    
-    print(f"\n🔥 Résumé des exports HTML créés :")
-    print(f"  📄 {html_initial} - Carte avant incendie")
-    print(f"  📄 {html_file} - Carte après incendie")
-    print("Ouvrez ces fichiers dans votre navigateur pour voir les visualisations !")
     
     print(f"\nLégende:")
     print(f"- '.' = Terrain nu")
     print(f"- 'T' = Arbre")
     print(f"- 'W' = Eau")
     print(f"- 'X' = Terrain brûlé")
-    
-    # Test avec remise à zéro
-    print(f"\n" + "="*50)
-    print("TEST DE REMISE À ZÉRO")
-    print("="*50 + "\n")
-    
+
+    # Test avec coupe
     simulator.reset_map()
-    print("Carte remise à zéro:")
-    simulator.display_map(show_burnt=False)
+    simulator.apply_smart_preventive_cut(fire_x, fire_y)
+    # Afficher la carte après la coupe intelligente
+    print("Carte après coupe:")
+    simulator.display_map(show_burnt=True)
+    simulator.export_html("resultat_smart_cut.html")
+
+    # Test avec n coupes
+    simulator.reset_map()
+    coupes = simulator.apply_smart_n_preventive_cut(fire_x=5, fire_y=3, nCase=3)
+    # Afficher la carte après les coupes intelligentes
+    print("Carte après 3 coupes:")
+    simulator.display_map(show_burnt=True)
+    simulator.export_html("resultat_smart_n_cut.html")
