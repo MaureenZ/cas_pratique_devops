@@ -86,6 +86,7 @@ class TestMapGenerator(unittest.TestCase):
     def test_map_generation_pourcent_vide(self):
         width, height = 15, 8
         simulateur = ForestFireSimulator(width, height)
+        
 
         #cas 1 : arbre et eau à 0
         simulateur.map_generator(tree_percentage=0, water_percentage=0)
