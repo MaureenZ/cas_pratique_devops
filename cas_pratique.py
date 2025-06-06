@@ -352,6 +352,30 @@ class ForestFireSimulator:
             print(f"- Terrain brûlé: {burnt_count}/{total_cells} ({burnt_count/total_cells*100:.1f}%)")
 
 
+    def apply_smart_n_preventive_cut(self, fire_x: int, fire_y: int, nCase: int):
+        """
+        Coupe intelligemment jusqu'à n arbres pour limiter la propagation du feu.
+
+        Args:
+            fire_x: Coordonnée x du départ du feu
+            fire_y: Coordonnée y du départ du feu
+            nCase: Nombre maximum d'arbres à couper
+
+        Returns:
+            Liste de tuples (x, y, feu_avant, feu_apres) pour chaque coupe effectuée
+        """
+        coupes_effectuees = []
+
+        for _ in range(nCase):
+            result = self.apply_smart_preventive_cut(fire_x, fire_y)
+            if result is None:
+                break  # Plus aucune amélioration possible
+            x, y, feu_avant, feu_apres = result
+            coupes_effectuees.append((x, y, feu_avant, feu_apres))
+
+        return coupes_effectuees
+        
+
     def apply_smart_preventive_cut(self, fire_x: int, fire_y: int):
         """
         Applique une stratégie intelligente de coupe d'un seul arbre pour limiter la propagation du feu.
@@ -443,9 +467,6 @@ if __name__ == "__main__":
     print("Carte après incendie:")
     simulator.display_map(show_burnt=True)
 
-
-
-    
     # Export HTML
     print(f"\n" + "="*30)
     print("EXPORT HTML - APRÈS INCENDIE")
@@ -466,11 +487,20 @@ if __name__ == "__main__":
     print(f"- 'X' = Terrain brûlé")
 
     # Test avec coupe
+    simulator.reset_map()
     simulator.apply_smart_preventive_cut(fire_x, fire_y)
     # Afficher la carte après la coupe intelligente
     print("Carte après coupe:")
     simulator.display_map(show_burnt=True)
     simulator.export_html("resultat_smart_cut.html")
+
+    # Test avec n coupes
+    simulator.reset_map()
+    coupes = simulator.apply_smart_n_preventive_cut(fire_x=5, fire_y=3, nCase=3)
+    # Afficher la carte après les coupes intelligentes
+    print("Carte après 3 coupes:")
+    simulator.display_map(show_burnt=True)
+    simulator.export_html("resultat_smart_n_cut.html")
 
     # Test avec remise à zéro
     print(f"\n" + "="*50)
