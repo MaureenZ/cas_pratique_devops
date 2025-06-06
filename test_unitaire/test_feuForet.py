@@ -100,7 +100,69 @@ class TestFireSimulation(unittest.TestCase):
         # On vérifie que le symbole 🔥 (brûlé) n'apparaît pas dans l'affichage
         self.assertNotIn("🔥", output)
 
+    def test_export_html_creates_file_with_content(self):
+        # Préparer une carte simple
+        self.sim.map = [
+            [TerrainType.TREE, TerrainType.EMPTY],
+            [TerrainType.WATER, TerrainType.BURNT],
+        ]
+        self.sim.current_map = self.sim.map
+        self.sim.width = 2
+        self.sim.height = 2
 
+        # Nom de fichier de test
+        test_filename = "test_export.html"
+
+        # Appeler la méthode
+        result_file = self.sim.export_html(filename=test_filename, title="Test HTML Export")
+
+        # Vérifier que le fichier a bien été créé
+        self.assertTrue(os.path.exists(test_filename), "Le fichier HTML n'a pas été créé")
+
+        # Vérifier que le contenu du fichier contient des éléments attendus
+        with open(test_filename, 'r', encoding='utf-8') as f:
+            content = f.read()
+            self.assertIn("<title>Test HTML Export</title>", content)
+            self.assertIn("🌳", content)
+            self.assertIn("💧", content)
+            self.assertIn("🔥", content)
+            self.assertIn("🍂", content)
+            self.assertIn("Statistiques de la simulation", content)
+            self.assertIn("Taille de la carte", content)
+
+        # Nettoyage : supprimer le fichier généré
+        os.remove(test_filename)
+
+    def test_export_html_uses_original_map(self):
+        # Préparer une map d'origine différente de la map actuelle
+        self.sim.map = [
+            [TerrainType.TREE, TerrainType.EMPTY],
+            [TerrainType.WATER, TerrainType.BURNT],
+        ]
+        self.sim.current_map = [
+            [TerrainType.BURNT, TerrainType.BURNT],
+            [TerrainType.BURNT, TerrainType.BURNT],
+        ]
+        self.sim.width = 2
+        self.sim.height = 2
+
+        # Nom de fichier pour le test
+        test_filename = "test_export_original_map.html"
+
+        # Appel avec use_map=True
+        self.sim.export_html(filename=test_filename, title="Test Map Originale", use_map=True)
+
+        # Lire le contenu généré
+        with open(test_filename, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # Vérifie que les symboles correspondant à self.map (et non current_map) sont bien présents
+            self.assertIn("🌳", content)  # TREE
+            self.assertIn("💧", content)  # WATER
+            self.assertIn("🍂", content)  # EMPTY
+            self.assertIn("🔥", content)  # BURNT
+
+        # Nettoyage
+        os.remove(test_filename)
 
 
 if __name__ == "__main__":
