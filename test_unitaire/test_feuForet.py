@@ -1,8 +1,10 @@
+import io
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import unittest
+from contextlib import redirect_stdout
 from cas_pratique import ForestFireSimulator
 from cas_pratique import TerrainType
 import copy
@@ -47,6 +49,58 @@ class TestFireSimulation(unittest.TestCase):
         sim2.current_map = copy.deepcopy(sim2.map)
         result = sim2.apply_smart_preventive_cut(0, 0)
         self.assertIsNone(result)
+    
+    def test_display_map_output(self):
+        self.sim.map = [
+            [TerrainType.EMPTY, TerrainType.TREE],
+            [TerrainType.WATER, TerrainType.BURNT],
+        ]
+        self.sim.current_map = self.sim.map
+        self.sim.width = 2
+        self.sim.height = 2
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            self.sim.display_map()
+
+        output = f.getvalue()
+
+        # Vérifier que les symboles apparaissent dans l'affichage
+        self.assertIn("⬜", output)   # EMPTY
+        self.assertIn("🌳", output)  # TREE
+        self.assertIn("💧", output)  # WATER
+        self.assertIn("🔥", output)  # BURNT
+
+        # Vérifier qu’il y a bien une ligne de statistiques
+        self.assertIn("Statistique:", output)
+        self.assertIn("- Arbres:", output)
+        self.assertIn("- Eau:", output)
+        self.assertIn("- Terrain nu:", output)
+        self.assertIn("- Terrain brûlé:", output)
+    
+    def test_display_map_no_burnt(self):
+        # Carte avec une cellule brûlée, qu'on ne veut pas afficher
+        self.sim.map = [
+            [TerrainType.EMPTY, TerrainType.TREE],
+            [TerrainType.WATER, TerrainType.TREE],
+        ]
+        self.sim.current_map = [
+            [TerrainType.EMPTY, TerrainType.TREE],
+            [TerrainType.WATER, TerrainType.BURNT],  # simulé brûlé
+        ]
+        self.sim.width = 2
+        self.sim.height = 2
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            self.sim.display_map(show_burnt=False)  # on veut voir self.map
+
+        output = f.getvalue()
+
+        # On vérifie que le symbole 🔥 (brûlé) n'apparaît pas dans l'affichage
+        self.assertNotIn("🔥", output)
+
+
 
 
 if __name__ == "__main__":
