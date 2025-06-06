@@ -1,0 +1,3 @@
+[submodule "cas_pratique_devops"]
+	path = cas_pratique_devops
+	url = https://github.com/MaureenZ/cas_pratique_devops.git
