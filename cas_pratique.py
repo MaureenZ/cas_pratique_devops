@@ -351,6 +351,84 @@ class ForestFireSimulator:
         if burnt_count > 0:
             print(f"- Terrain brûlé: {burnt_count}/{total_cells} ({burnt_count/total_cells*100:.1f}%)")
 
+    def apply_smart_n_preventive_cut(self, fire_x: int, fire_y: int, nCase: int):
+        """
+        Coupe intelligemment jusqu'à n arbres pour limiter la propagation du feu.
+
+        Args:
+            fire_x: Coordonnée x du départ du feu
+            fire_y: Coordonnée y du départ du feu
+            nCase: Nombre maximum d'arbres à couper
+
+        Returns:
+            Liste de tuples (x, y, feu_avant, feu_apres) pour chaque coupe effectuée
+        """
+        coupes_effectuees = []
+
+        for _ in range(nCase):
+            result = self.apply_smart_preventive_cut(fire_x, fire_y)
+            if result is None:
+                break  # Plus aucune amélioration possible
+            x, y, feu_avant, feu_apres = result
+            coupes_effectuees.append((x, y, feu_avant, feu_apres))
+
+        return coupes_effectuees
+        
+
+    def apply_smart_preventive_cut(self, fire_x: int, fire_y: int):
+        """
+        Applique une stratégie intelligente de coupe d'un seul arbre pour limiter la propagation du feu.
+        
+        Args:
+            fire_x: Coordonnée x de départ du feu
+            fire_y: Coordonnée y de départ du feu
+            
+        Returns:
+            Tuple (meilleur_x, meilleur_y, nb_brule_initial, nb_brule_apres) de la meilleure coupe
+        """
+        # Carte initiale sans modification
+        self.reset_map()
+        nb_brule_initial = self.simulate_fire(fire_x, fire_y)
+        
+        # Liste des positions d'arbres
+        tree_positions = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if self.original_map[y][x] == TerrainType.TREE
+        ]
+
+        best_cut = None
+        min_burnt = nb_brule_initial
+
+        for (x, y) in tree_positions:
+            # empecher de couper le départ du feu
+            if (x, y) == (fire_x, fire_y):
+                continue
+
+            # Créer une copie temporaire de la carte
+            temp_map = copy.deepcopy(self.original_map)
+            temp_map[y][x] = TerrainType.EMPTY  # Couper l'arbre
+
+            # Simuler le feu avec cette carte
+            self.current_map = copy.deepcopy(temp_map)
+            burnt = self.simulate_fire(fire_x, fire_y)
+
+            if burnt < min_burnt:
+                min_burnt = burnt
+                best_cut = (x, y)
+        
+        # Réappliquer la meilleure coupe sur la vraie carte
+        if best_cut:
+            self.original_map[best_cut[1]][best_cut[0]] = TerrainType.EMPTY
+            self.reset_map()
+            self.simulate_fire(fire_x, fire_y)
+            print(f"Meilleure coupe: {best_cut}, Feu initial: {nb_brule_initial}, Feu après coupe: {min_burnt}")
+            return best_cut + (nb_brule_initial, min_burnt)
+        else:
+            print("Aucune coupe n'améliore la situation.")
+            return None
+
 # Test du simulateur
 if __name__ == "__main__":
     # Créer un simulateur
@@ -386,7 +464,8 @@ if __name__ == "__main__":
     # Afficher la carte après l'incendie
     print("Carte après incendie:")
     simulator.display_map(show_burnt=True)
-    
+
+
     # Export HTML
     print(f"\n" + "="*30)
     print("EXPORT HTML - APRÈS INCENDIE")
@@ -405,7 +484,23 @@ if __name__ == "__main__":
     print(f"- 'T' = Arbre")
     print(f"- 'W' = Eau")
     print(f"- 'X' = Terrain brûlé")
-    
+
+    # Test avec coupe
+    simulator.reset_map()
+    simulator.apply_smart_preventive_cut(fire_x, fire_y)
+    # Afficher la carte après la coupe intelligente
+    print("Carte après coupe:")
+    simulator.display_map(show_burnt=True)
+    simulator.export_html("resultat_smart_cut.html")
+
+    # Test avec n coupes
+    simulator.reset_map()
+    coupes = simulator.apply_smart_n_preventive_cut(fire_x=5, fire_y=3, nCase=3)
+    # Afficher la carte après les coupes intelligentes
+    print("Carte après 3 coupes:")
+    simulator.display_map(show_burnt=True)
+    simulator.export_html("resultat_smart_n_cut.html")
+
     # Test avec remise à zéro
     print(f"\n" + "="*50)
     print("TEST DE REMISE À ZÉRO")
