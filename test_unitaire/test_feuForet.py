@@ -27,12 +27,34 @@ class TestFireSimulation(unittest.TestCase):
         self.sim.map = copy.deepcopy(self.map_enum)
         self.sim.current_map = copy.deepcopy(self.map_enum)
 
+    def test_reset_map_resets_current_map(self):
+        # Modifier current_map pour simuler un état modifié (ex: tout brûlé)
+        for i in range(self.sim.height):
+            for j in range(self.sim.width):
+                self.sim.current_map[i][j] = TerrainType.BURNT
+
+        # Vérifier que current_map est modifiée et différente de map
+        different = False
+        for i in range(self.sim.height):
+            for j in range(self.sim.width):
+                if self.sim.current_map[i][j] != self.sim.map[i][j]:
+                    different = True
+                    break
+        self.assertTrue(different, "current_map doit être différente de map avant reset")
+
+        # Appeler reset_map
+        self.sim.reset_map()
+
+        # Vérifier que current_map est redevenue identique à map
+        for i in range(self.sim.height):
+            for j in range(self.sim.width):
+                self.assertEqual(self.sim.current_map[i][j], self.sim.map[i][j],
+                                f"Cellule ({i},{j}) doit être identique après reset")
+
+
     def test_simulate_fire_valid_and_propagation(self):
         # Test normal : départ feu sur arbre en (1,1)
         burnt = self.sim.simulate_fire(1, 1)
-        # On s'attend à ce que tous les arbres connectés brûlent
-        # Arbres dans la map à (0,1), (1,0), (1,1), (3,1) est vide, (1,3) arbre isolé
-        # Donc brûleront (0,1), (1,0), (1,1) soit 3 cases
         self.assertEqual(burnt, 3)
         # Vérifier que ces cases sont bien marquées brûlées
         self.assertEqual(self.sim.current_map[1][0], TerrainType.BURNT)
